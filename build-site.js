@@ -225,6 +225,7 @@ function layout({ title, description, file, depth = 0, active = "", body, jsonLd
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="${rel(depth, "css/styles.css")}" />
+  <script src="${rel(depth, "js/site-status.js")}"></script>
   ${ld}
 </head>
 <body>
