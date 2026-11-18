@@ -13,12 +13,17 @@ const SITE_URL = "https://digikartsolutions.in";
 const PHONE = "7528813511";
 const PHONE_DISPLAY = "+91 75288 13511";
 const WA = "917528813511";
-const ADDRESS_LINES = ["Shop No. 01, Street No. 05,", "Saraswati Kunj, Hanuman Mandir Road,", "Greater Noida West, Uttar Pradesh - 201009"];
+const ADDRESS_LINES = ["Shop No. 01, Street No. 05, Near Aashiyana Apartment,", "Saraswati Kunj, Hanuman Mandir Road,", "Greater Noida West, Uttar Pradesh - 201009"];
 const ADDRESS_ONE = ADDRESS_LINES.join(" ");
-const HOURS = "Working hours to be confirmed — please call before visiting";
-const MAPS_QUERY = encodeURIComponent("Saraswati Kunj, Hanuman Mandir Road, Greater Noida West, Uttar Pradesh 201009");
-const MAPS_EMBED = `https://maps.google.com/maps?q=${MAPS_QUERY}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-const MAPS_LINK = `https://www.google.com/maps/search/?api=1&query=${MAPS_QUERY}`;
+const HOURS = "Open every day, 8:00 AM – 10:00 PM";
+const GEO = { lat: 28.6247105, lng: 77.4171372 };
+const MAPS_EMBED = `https://maps.google.com/maps?q=${GEO.lat},${GEO.lng}&t=&z=17&ie=UTF8&iwloc=&output=embed`;
+const MAPS_LINK = `https://www.google.com/maps/place/DigiKart+Solutions/@${GEO.lat},${GEO.lng},17z/data=!3m1!4b1!4m6!3m5!1s0x390cefd7c5aa27b9:0xb63775bf3f651d1a!8m2!3d${GEO.lat}!4d${GEO.lng}!16s%2Fg%2F11zd093d9l`;
+const SOCIAL = {
+  instagram: "https://www.instagram.com/digikartsolutions.online",
+  facebook: "https://www.facebook.com/share/19quQYcKrq/",
+  google: MAPS_LINK,
+};
 
 const GROUPS = {
   identity: "Identity & Documents",
@@ -59,6 +64,9 @@ const I = {
   user: svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'),
   lock: svg('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'),
   sparkle: svg('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>'),
+  instagram: svg('<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6"/>'),
+  facebook: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.87.25-1.46 1.5-1.46h1.6V4.46A21 21 0 0 0 14.3 4.3c-2.3 0-3.8 1.4-3.8 3.96v2.24H8v3h2.5V21z"/></svg>`,
+  google: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 12.23c0-.68-.06-1.36-.18-2.02H12v3.83h5.4a4.6 4.6 0 0 1-2 3.03v2.5h3.23c1.9-1.75 2.97-4.32 2.97-7.34z"/><path d="M12 22c2.7 0 4.97-.9 6.63-2.43l-3.23-2.5c-.9.6-2.05.96-3.4.96-2.6 0-4.82-1.76-5.6-4.13H3.06v2.58A10 10 0 0 0 12 22z" opacity=".85"/><path d="M6.4 13.9a6 6 0 0 1 0-3.8V7.52H3.06a10 10 0 0 0 0 8.96z" opacity=".7"/><path d="M12 5.98c1.47 0 2.79.5 3.83 1.5l2.87-2.87A9.6 9.6 0 0 0 12 2a10 10 0 0 0-8.94 5.52L6.4 10.1C7.18 7.74 9.4 5.98 12 5.98z" opacity=".55"/></svg>`,
   waFill: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.18-1.41-.08-.13-.27-.2-.57-.35zM12 2a10 10 0 0 0-8.56 15.17L2 22l4.96-1.41A10 10 0 1 0 12 2zm0 18a8 8 0 0 1-4.29-1.24l-.31-.19-3.04.87.88-2.91-.2-.32A8 8 0 1 1 12 20z"/></svg>`,
 };
 
@@ -81,16 +89,11 @@ const SVC_ICON = {
 const svcIcon = (s) => SVC_ICON[s.slug] || I.file;
 
 /* ---------- Brand ---------- */
-let markId = 0;
-function brandMark() {
-  const id = `dkg${++markId}`;
-  return `<svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2157B0"/><stop offset="1" stop-color="#12336B"/></linearGradient></defs><rect width="48" height="48" rx="13" fill="url(#${id})"/><path fill="#fff" fill-rule="evenodd" d="M13 11.5h11.2c7.4 0 12.3 5 12.3 12.5s-4.9 12.5-12.3 12.5H13zm5.6 5.4v14.2h5.4c4.1 0 6.8-2.8 6.8-7.1s-2.7-7.1-6.8-7.1z"/><rect x="21.3" y="20.8" width="6.4" height="6.4" rx="1.8" fill="#D92732"/><circle cx="38.6" cy="9.4" r="2.6" fill="#D92732"/></svg>`;
-}
-function brand(depth, light = false) {
-  return `<a class="brand${light ? " brand--light" : ""}" href="${rel(depth, "index.html")}" aria-label="DigiKart Solutions — Home">
-        ${brandMark()}
-        <span class="brand-text"><span class="brand-name">Digi<b>Kart</b></span><span class="brand-tag">Solutions</span></span>
-      </a>`;
+function brand(depth, variant = "header") {
+  const img = variant === "footer"
+    ? `<img src="${rel(depth, "assets/logo.png")}" width="394" height="127" alt="DigiKart Solutions — Digital &amp; Online Service Provider" />`
+    : `<img src="${rel(depth, "assets/logo-header.png")}" width="390" height="125" alt="DigiKart Solutions" />`;
+  return `<a class="brand brand--${variant}" href="${rel(depth, "index.html")}" aria-label="DigiKart Solutions — Home">${img}</a>`;
 }
 
 /* ---------- Layout ---------- */
@@ -151,12 +154,13 @@ function footer(depth) {
     <div class="container">
       <div class="footer-grid">
         <div>
-          ${brand(depth, true)}
+          ${brand(depth, "footer")}
           <p class="footer-about">DigiKart Solutions is a Digital &amp; Online Service Provider in Greater Noida West, helping customers with documentation, government-related application assistance, financial and business services.</p>
           <div class="socials">
+            <a href="${SOCIAL.instagram}" target="_blank" rel="noopener" aria-label="DigiKart Solutions on Instagram">${I.instagram}</a>
+            <a href="${SOCIAL.facebook}" target="_blank" rel="noopener" aria-label="DigiKart Solutions on Facebook">${I.facebook}</a>
+            <a href="${SOCIAL.google}" target="_blank" rel="noopener" aria-label="DigiKart Solutions on Google">${I.google}</a>
             <a href="${wa()}" target="_blank" rel="noopener" aria-label="WhatsApp">${I.waFill}</a>
-            <a href="tel:${PHONE}" aria-label="Call DigiKart">${I.phone}</a>
-            <a href="${MAPS_LINK}" target="_blank" rel="noopener" aria-label="Find us on Google Maps">${I.pin}</a>
           </div>
         </div>
         <div class="footer-col">
@@ -217,10 +221,12 @@ function layout({ title, description, file, depth = 0, active = "", body, jsonLd
   <meta property="og:title" content="${esc(title)}" />
   <meta property="og:description" content="${esc(description)}" />
   ${canonical ? `<meta property="og:url" content="${canonical}" />` : ""}
-  <meta property="og:image" content="${SITE_URL}/assets/hero-assist.jpg" />
+  <meta property="og:image" content="${SITE_URL}/assets/og-logo.jpg" />
   <meta property="og:locale" content="en_IN" />
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="icon" href="${rel(depth, "assets/favicon.svg")}" type="image/svg+xml" />
+  <link rel="icon" href="${rel(depth, "assets/favicon-32.png")}" sizes="32x32" type="image/png" />
+  <link rel="icon" href="${rel(depth, "assets/favicon-48.png")}" sizes="48x48" type="image/png" />
+  <link rel="apple-touch-icon" href="${rel(depth, "assets/apple-touch-icon.png")}" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -324,17 +330,26 @@ const localBusinessLd = {
   slogan: "Digital Services Made Simple.",
   description: "Digital & Online Service Provider in Greater Noida West offering documentation and online application assistance.",
   url: `${SITE_URL}/`,
-  image: `${SITE_URL}/assets/hero-assist.jpg`,
-  logo: `${SITE_URL}/assets/logo.svg`,
+  image: `${SITE_URL}/assets/og-logo.jpg`,
+  logo: `${SITE_URL}/assets/logo.png`,
   telephone: `+91${PHONE}`,
   address: {
     "@type": "PostalAddress",
-    streetAddress: "Shop No. 01, Street No. 05, Saraswati Kunj, Hanuman Mandir Road",
+    streetAddress: "Shop No. 01, Street No. 05, Near Aashiyana Apartment, Saraswati Kunj, Hanuman Mandir Road",
     addressLocality: "Greater Noida West",
     addressRegion: "Uttar Pradesh",
     postalCode: "201009",
     addressCountry: "IN",
   },
+  geo: { "@type": "GeoCoordinates", latitude: GEO.lat, longitude: GEO.lng },
+  hasMap: MAPS_LINK,
+  openingHoursSpecification: [{
+    "@type": "OpeningHoursSpecification",
+    dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+    opens: "08:00",
+    closes: "22:00",
+  }],
+  sameAs: [SOCIAL.instagram, SOCIAL.facebook, MAPS_LINK],
   areaServed: ["Greater Noida West", "Greater Noida", "Noida"],
   hasOfferCatalog: {
     "@type": "OfferCatalog",
@@ -1050,12 +1065,5 @@ ${urls.map((u) => `  <url><loc>${SITE_URL}/${u}</loc><changefreq>monthly</change
 `
 );
 
-const MARK_PATHS = `<rect width="48" height="48" rx="13" fill="url(#g)"/><path fill="#fff" fill-rule="evenodd" d="M13 11.5h11.2c7.4 0 12.3 5 12.3 12.5s-4.9 12.5-12.3 12.5H13zm5.6 5.4v14.2h5.4c4.1 0 6.8-2.8 6.8-7.1s-2.7-7.1-6.8-7.1z"/><rect x="21.3" y="20.8" width="6.4" height="6.4" rx="1.8" fill="#D92732"/><circle cx="38.6" cy="9.4" r="2.6" fill="#D92732"/>`;
-const GRAD = `<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2157B0"/><stop offset="1" stop-color="#12336B"/></linearGradient></defs>`;
-write("assets/favicon.svg", `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">${GRAD}${MARK_PATHS}</svg>\n`);
-write(
-  "assets/logo.svg",
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 230 48" role="img" aria-label="DigiKart Solutions">${GRAD}${MARK_PATHS}<text x="60" y="27" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="23" font-weight="800" letter-spacing="-0.8" fill="#173F82">Digi<tspan fill="#D92732">Kart</tspan></text><text x="61" y="42" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="9" font-weight="700" letter-spacing="3.4" fill="#8A93A3">SOLUTIONS</text></svg>\n`
-);
 
 console.log(`\nBuilt ${urls.length + 1} pages.`);
