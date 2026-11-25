@@ -7,11 +7,15 @@
 const fs = require("fs");
 const path = require("path");
 const SERVICES = require("./content/services.js");
+const COURSES = require("./content/courses.js");
+const EDUCATION = require("./content/education.js");
+const PRINTING = require("./content/printing.js");
 
 const ROOT = __dirname;
-const SITE_URL = "https://digikartsolutions.in";
+const SITE_URL = "https://digikartsolutions.online";
 const PHONE = "7528813511";
 const PHONE_DISPLAY = "+91 75288 13511";
+const EMAIL = "support@digikartsolutions.online";
 const WA = "917528813511";
 const ADDRESS_LINES = ["Shop No. 01, Street No. 05, Near Aashiyana Apartment,", "Saraswati Kunj, Hanuman Mandir Road,", "Greater Noida West, Uttar Pradesh - 201009"];
 const ADDRESS_ONE = ADDRESS_LINES.join(" ");
@@ -19,6 +23,23 @@ const HOURS = "Open every day, 8:00 AM – 10:00 PM";
 const GEO = { lat: 28.6247105, lng: 77.4171372 };
 const MAPS_EMBED = `https://maps.google.com/maps?q=${GEO.lat},${GEO.lng}&t=&z=17&ie=UTF8&iwloc=&output=embed`;
 const MAPS_LINK = `https://www.google.com/maps/place/DigiKart+Solutions/@${GEO.lat},${GEO.lng},17z/data=!3m1!4b1!4m6!3m5!1s0x390cefd7c5aa27b9:0xb63775bf3f651d1a!8m2!3d${GEO.lat}!4d${GEO.lng}!16s%2Fg%2F11zd093d9l`;
+const GOOGLE_REVIEWS_URL = "https://www.google.com/maps?cid=13130092702884764954";
+const GOOGLE_RATING = { score: "5.0", count: "50+" };
+const STATS = [
+  ["300+", "Services Available"],
+  ["500+", "Happy Clients Served"],
+  ["2019", "Serving Since"],
+  ["3 Cities", "Greater Noida | Noida | Ghaziabad"],
+];
+/* Genuine Google reviews, copied verbatim from the public Google Business Profile. Replace with the Places API feed once an API key is available. */
+const REVIEWS = [
+  { name: "Isha Chaudhary", date: "Oct 2026", text: "Really happy with my experience! He was so kind, humble, and polite throughout the process. He completed my PAN card application and passport-size photos quickly and made everything so easy and hassle-free. I truly appreciate his helpful nature and excellent service. It’s always a pleasure to meet people who are not only good at their work but also have such a lovely way of talking. Highly recommended! ❤️✨" },
+  { name: "Trishu Singh", date: "Oct 2026", text: "Excellent service! I visited to get my PAN card made and update my phone number in my Aadhaar card. The entire process was very smooth, fast, and hassle-free. The staff is highly professional and helpful. Highly recommended!" },
+  { name: "Priyanka Baghel", date: "Oct 2026", text: "Excellent service ! The staff is polite, helpful and cooperative. All the work is completed quickly and efficiently , the prices are reasonable , and the overall experience is very good. Highly recommended !" },
+  { name: "Priya Rajput", date: "Sep 2026", text: "Very quick and good service. I contacted them for adhaar service and it was done on time." },
+  { name: "Vaibhav Rajput", date: "Oct 2026", text: "Very good service from DigiKart Solutions." },
+  { name: "Ashish Dixit", date: "Sep 2026", text: "Great service experience" },
+];
 const SOCIAL = {
   instagram: "https://www.instagram.com/digikartsolutions.online",
   facebook: "https://www.facebook.com/share/19quQYcKrq/",
@@ -28,7 +49,9 @@ const SOCIAL = {
 const GROUPS = {
   identity: "Identity & Documents",
   travel: "Travel & Vehicle",
-  business: "Business & Finance",
+  finance: "Banking, PF & Loans",
+  business: "Business & Tax",
+  forms: "Job & Online Forms",
 };
 
 const wa = (text = "Hello DigiKart Solutions, I would like to enquire about your services.") =>
@@ -64,6 +87,10 @@ const I = {
   user: svg('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'),
   lock: svg('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>'),
   sparkle: svg('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>'),
+  mail: svg('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 7 9-7"/>'),
+  book: svg('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'),
+  monitor: svg('<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>'),
+  printer: svg('<path d="M7 9V3.5h10V9"/><rect x="3.5" y="9" width="17" height="8" rx="2"/><path d="M7 14h10v6.5H7z"/>'),
   instagram: svg('<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6"/>'),
   facebook: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.87.25-1.46 1.5-1.46h1.6V4.46A21 21 0 0 0 14.3 4.3c-2.3 0-3.8 1.4-3.8 3.96v2.24H8v3h2.5V21z"/></svg>`,
   google: `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 12.23c0-.68-.06-1.36-.18-2.02H12v3.83h5.4a4.6 4.6 0 0 1-2 3.03v2.5h3.23c1.9-1.75 2.97-4.32 2.97-7.34z"/><path d="M12 22c2.7 0 4.97-.9 6.63-2.43l-3.23-2.5c-.9.6-2.05.96-3.4.96-2.6 0-4.82-1.76-5.6-4.13H3.06v2.58A10 10 0 0 0 12 22z" opacity=".85"/><path d="M6.4 13.9a6 6 0 0 1 0-3.8V7.52H3.06a10 10 0 0 0 0 8.96z" opacity=".7"/><path d="M12 5.98c1.47 0 2.79.5 3.83 1.5l2.87-2.87A9.6 9.6 0 0 0 12 2a10 10 0 0 0-8.94 5.52L6.4 10.1C7.18 7.74 9.4 5.98 12 5.98z" opacity=".55"/></svg>`,
@@ -84,6 +111,15 @@ const SVC_ICON = {
   "gst-tax": svg('<rect x="4" y="3" width="16" height="18" rx="2.5"/><path d="M8 7h8M8.5 16.5l7-6"/><circle cx="9" cy="11.5" r="1"/><circle cx="15" cy="15.5" r="1"/>'),
   "business-services": svg('<rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M3 12.5h18M11 12.5v1.5h2v-1.5"/>'),
   "dsc-trademark": svg('<path d="M4 20c2.5-1 3.5-3.5 5-3.5s1.5 2 3 2 2.5-2.5 4-2.5c1 0 1.7.6 2 1.2"/><path d="m14 4 6 6-7.5 7.5-3.5.5.5-3.5z"/>'),
+  "epfo-pf": svg('<path d="M4 10.5 12 5l8 5.5"/><path d="M5.5 10.5V19h13v-8.5"/><path d="M3.5 19h17"/><path d="M14 11.8c-.4-.6-1.1-.9-2-.9-1.1 0-2 .6-2 1.5 0 2 4 1 4 3 0 .9-.9 1.5-2 1.5-.9 0-1.6-.3-2-.9M12 10v.9M12 16.9v.9"/>'),
+  "loan-services": svg('<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>'),
+  "banking-services": svg('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M3 11h18M8 7V5h8v2"/>'),
+  "government-schemes": svg('<path d="M4 10.5 12 4l8 6.5"/><path d="M6 10v10h12V10"/><path d="M10 20v-6h4v6"/>'),
+  "online-forms": svg('<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>'),
+  "job-forms": svg('<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h5"/><circle cx="12" cy="17" r=".6"/>'),
+  "legal-documentation": svg('<path d="M8 3h8l4 4v14H8z"/><path d="M16 3v4h4M10 12h6M10 16h4"/>'),
+  "itr-filing": svg('<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h4M8 16h6"/>'),
+  "msme-udyam": svg('<rect x="3" y="7" width="18" height="13" rx="2.5"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/>'),
   fssai: svg('<path d="M7 3v8a3 3 0 0 0 3 3v7M10 3v6M13 3v8a3 3 0 0 1-3 3"/><path d="M17.5 21V3c-1.9 1.3-3 3.6-3 6.5v4h3"/>'),
 };
 const svcIcon = (s) => SVC_ICON[s.slug] || I.file;
@@ -106,11 +142,12 @@ function header(depth, active) {
   return `<div class="topbar">
     <div class="container topbar-inner">
       <div class="topbar-group">
-        <span class="topbar-note">Digital &amp; Online Service Provider</span>
-        <span class="topbar-hide-md">${I.pin}Saraswati Kunj, Greater Noida West</span>
+        <span class="topbar-note">Digital · Education · Computer · Printing</span>
+        <span class="topbar-hide-md">${I.pin}Greater Noida West</span>
       </div>
       <div class="topbar-group">
         <a href="tel:${PHONE}">${I.phone}${PHONE_DISPLAY}</a>
+        <a class="topbar-hide-md" href="mailto:${EMAIL}">${I.mail}${EMAIL}</a>
         <a class="topbar-hide-md" href="${wa()}" target="_blank" rel="noopener">${I.chat}WhatsApp us</a>
       </div>
     </div>
@@ -122,14 +159,15 @@ function header(depth, active) {
         ${link("Home", "index.html", "home")}
         ${link("About", "about.html", "about")}
         <div class="nav-dropdown">
-          <button class="nav-trigger${active === "services" ? " active" : ""}" type="button" aria-expanded="false" aria-haspopup="true">Services ${I.chevron}</button>
+          <button class="nav-trigger${active === "services" ? " active" : ""}" type="button" aria-expanded="false" aria-haspopup="true">Digital Services ${I.chevron}</button>
           <div class="mega">
             <div class="mega-grid">${mega}</div>
-            <div class="mega-foot"><span>Not sure which service you need? We'll guide you.</span><a href="${rel(depth, "services.html")}">View all services ${I.arrow}</a></div>
+            <div class="mega-foot"><span>300+ digital &amp; government services.</span><a href="${rel(depth, "digital-services.html")}">View all digital services ${I.arrow}</a></div>
           </div>
         </div>
-        ${link("How It Works", "how-it-works.html", "how")}
-        ${link("FAQs", "faqs.html", "faqs")}
+        ${link("Education", "education.html", "education")}
+        ${link("Computer Classes", "computer-classes.html", "computer")}
+        ${link("Printing", "printing.html", "printing")}
         ${link("Contact", "contact.html", "contact")}
         <div class="nav-mobile-cta">
           <a class="btn btn-light" href="tel:${PHONE}">${I.phone}Call ${PHONE_DISPLAY}</a>
@@ -155,7 +193,7 @@ function footer(depth) {
       <div class="footer-grid">
         <div>
           ${brand(depth, "footer")}
-          <p class="footer-about">DigiKart Solutions is a Digital &amp; Online Service Provider in Greater Noida West, helping customers with documentation, government-related application assistance, financial and business services.</p>
+          <p class="footer-about">DigiKart Solutions is a local centre in Greater Noida West for digital &amp; government services, education admissions, computer training and printing &amp; designing.</p>
           <div class="socials">
             <a href="${SOCIAL.instagram}" target="_blank" rel="noopener" aria-label="DigiKart Solutions on Instagram">${I.instagram}</a>
             <a href="${SOCIAL.facebook}" target="_blank" rel="noopener" aria-label="DigiKart Solutions on Facebook">${I.facebook}</a>
@@ -167,20 +205,22 @@ function footer(depth) {
           <h4>Quick Links</h4>
           <a href="${rel(depth, "index.html")}">Home</a>
           <a href="${rel(depth, "about.html")}">About Us</a>
-          <a href="${rel(depth, "services.html")}">Services</a>
-          <a href="${rel(depth, "how-it-works.html")}">How It Works</a>
-          <a href="${rel(depth, "faqs.html")}">FAQs</a>
+          <a href="${rel(depth, "digital-services.html")}">Digital Services</a>
+          <a href="${rel(depth, "education.html")}">Education &amp; Admissions</a>
+          <a href="${rel(depth, "computer-classes.html")}">Computer Classes</a>
+          <a href="${rel(depth, "printing.html")}">Printing &amp; Designing</a>
           <a href="${rel(depth, "contact.html")}">Contact</a>
         </div>
         <div class="footer-col">
           <h4>Our Services</h4>
-          <div class="footer-services">${SERVICES.map((s) => `<a href="${svcHref(depth, s)}">${s.name}</a>`).join("")}</div>
+          <div class="footer-services">${SERVICES.slice(0, 14).map((s) => `<a href="${svcHref(depth, s)}">${s.name}</a>`).join("")}<a href="${rel(depth, "digital-services.html")}">All digital services</a></div>
         </div>
         <div class="footer-col">
           <h4>Get in Touch</h4>
           <ul class="footer-contact">
             <li>${I.phone}<span>Phone: <a href="tel:${PHONE}">${PHONE_DISPLAY}</a></span></li>
             <li>${I.chat}<span>WhatsApp: <a href="${wa()}" target="_blank" rel="noopener">${PHONE_DISPLAY}</a></span></li>
+            <li>${I.mail}<span>Email: <a href="mailto:${EMAIL}">${EMAIL}</a></span></li>
             <li>${I.pin}<span>${ADDRESS_LINES.join("<br>")}</span></li>
             <li>${I.clock}<span>${HOURS}</span></li>
           </ul>
@@ -284,7 +324,118 @@ function pageHero(depth, title, text, crumbs) {
     </section>`;
 }
 
-function ctaBlock(depth, title = "Need help with a digital service today?", text = "Send us a WhatsApp message or give us a call. We'll explain what's required and guide you on the next steps.") {
+const STAR = `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 2.8 2.8 5.8 6.3.8-4.6 4.4 1.2 6.3L12 17l-5.7 3.1 1.2-6.3-4.6-4.4 6.3-.8z"/></svg>`;
+const stars = `<span class="stars" role="img" aria-label="5 out of 5 stars">${STAR.repeat(5)}</span>`;
+
+function trustBand() {
+  return `<section class="trust-band-wrap">
+      <div class="container">
+        <div class="trust-band reveal">
+          ${STATS.map(([n, l]) => `<div class="trust-stat"><strong>${n}</strong><span>${l}</span></div>`).join("")}
+        </div>
+        <p class="trust-areas reveal">${I.pin}<span>Proudly serving <b>Gaur City</b> &amp; <b>Greater Noida West</b></span></p>
+      </div>
+    </section>`;
+}
+
+function reviewsSection(alt = false) {
+  const card = (r) => `<figure class="review-card">
+            <div class="review-top">${stars}<span class="review-g" title="Google review">${I.google}</span></div>
+            <blockquote>${r.text}</blockquote>
+            <figcaption><span class="review-avatar" aria-hidden="true">${r.name.charAt(0)}</span><div><strong>${r.name}</strong><small>${r.date} · Google</small></div></figcaption>
+          </figure>`;
+  return `<section class="section${alt ? " section-alt" : ""}">
+      <div class="container">
+        <div class="section-head-row">
+          <div class="section-head reveal">
+            <span class="eyebrow">Google Reviews</span>
+            <h2 class="h2">What our customers <em>say about us</em></h2>
+            <div class="rating-summary">${I.google}<strong>${GOOGLE_RATING.score}</strong>${stars}<span>${GOOGLE_RATING.count} reviews on Google</span></div>
+          </div>
+          <div class="btn-group reveal">
+            <a class="btn btn-outline" href="${GOOGLE_REVIEWS_URL}" target="_blank" rel="noopener">Read all Google reviews ${I.arrowUR}</a>
+            <a class="btn btn-primary" href="${GOOGLE_REVIEWS_URL}" target="_blank" rel="noopener">${STAR}Write a Google review</a>
+          </div>
+        </div>
+        <div class="reviews" data-carousel>
+          <div class="reviews-track">
+          ${REVIEWS.map(card).join("\n          ")}
+          </div>
+          <div class="reviews-nav">
+            <button class="reviews-btn" type="button" data-dir="-1" aria-label="Previous reviews">${I.chevronR}</button>
+            <div class="reviews-dots" aria-hidden="true"></div>
+            <button class="reviews-btn" type="button" data-dir="1" aria-label="Next reviews">${I.chevronR}</button>
+          </div>
+        </div>
+        <p class="reviews-note">Reviews shown are genuine customer reviews from our Google Business Profile.</p>
+      </div>
+    </section>`;
+}
+
+const PILLARS = [
+  {
+    key: "digital",
+    href: "digital-services.html",
+    icon: I.layers,
+    name: "Digital Services",
+    text: "PAN, Aadhaar, Passport, GST, EPFO, loans, insurance, vehicle work and 300+ government &amp; online services.",
+    wa: "Hello DigiKart Solutions, I want to enquire about Digital Services.",
+  },
+  {
+    key: "education",
+    href: "education.html",
+    icon: I.book,
+    name: "Education &amp; Admissions",
+    text: "B.A., B.Sc., B.Com., university admission, exam forms, registration and graduation paperwork.",
+    wa: "Hello DigiKart Solutions, I need help with Education / University Admission.",
+  },
+  {
+    key: "computer",
+    href: "computer-classes.html",
+    icon: I.monitor,
+    name: "Computer Classes",
+    text: "Computer courses with duration, fees (on enquiry) and student admission support.",
+    wa: "Hello DigiKart Solutions, I want to enquire about Computer Course Admission.",
+  },
+  {
+    key: "printing",
+    href: "printing.html",
+    icon: I.printer,
+    name: "Printing &amp; Designing",
+    text: "Photocopy, printouts, lamination, photos, mugs, t-shirts, gifts and graphic design.",
+    wa: "Hello DigiKart Solutions, I want to order Printing / Designing services.",
+  },
+];
+
+function pillarCards(depth) {
+  return `<div class="pillar-grid">
+          ${PILLARS.map((p, i) => `<article class="pillar-card reveal" style="--d:${i * 0.06}s">
+            <span class="svc-icon">${p.icon}</span>
+            <h3>${p.name}</h3>
+            <p>${p.text}</p>
+            <div class="btn-group">
+              <a class="btn btn-primary btn-sm" href="${rel(depth, p.href)}">Explore ${I.arrow}</a>
+              <a class="btn btn-wa btn-sm" href="${wa(p.wa)}" target="_blank" rel="noopener">${I.waFill}WhatsApp</a>
+            </div>
+          </article>`).join("\n          ")}
+        </div>`;
+}
+
+function promoBanner({ kicker, title, text, href, waMsg, tone = "blue" }) {
+  return `<aside class="promo-banner promo-banner--${tone} reveal">
+          <div>
+            <span class="eyebrow">${kicker}</span>
+            <h3>${title}</h3>
+            <p>${text}</p>
+          </div>
+          <div class="btn-group">
+            <a class="btn btn-primary" href="${href}">${title.includes("Computer") ? "View courses" : "View admissions"} ${I.arrow}</a>
+            <a class="btn btn-wa" href="${wa(waMsg)}" target="_blank" rel="noopener">${I.waFill}WhatsApp Enquiry</a>
+          </div>
+        </aside>`;
+}
+
+function ctaBlock(depth, title = "Need Help With a Digital Service?", text = "Send us a WhatsApp message or give us a call. We'll explain what's required and guide you on the next steps.") {
   return `<section class="section-sm">
       <div class="container">
         <div class="cta reveal">
@@ -306,7 +457,8 @@ const GENERAL_FAQS = [
   ["Is DigiKart Solutions a government office?", "No. DigiKart Solutions is a private Digital &amp; Online Service Provider offering assistance. Official processing and approvals remain with the respective government departments and authorised agencies."],
   ["How can I start an enquiry?", `You can call or WhatsApp us on ${PHONE_DISPLAY}, visit our shop at Saraswati Kunj, Greater Noida West, or submit the enquiry form on our Contact page.`],
   ["Do you guarantee approval of applications?", "No. Approvals depend on official rules, document validity and verification by the concerned authority. We help you prepare correctly and apply through the right channels."],
-  ["Which areas do you serve?", "We are based in Greater Noida West, Uttar Pradesh, and assist customers from Greater Noida West and the surrounding areas."],
+  ["Which areas do you serve?", "We are based in Greater Noida West, Uttar Pradesh, and assist customers from Greater Noida West, Gaur City, Noida and Ghaziabad."],
+  ["Do you offer computer classes and university admissions?", "Yes. DigiKart also assists with computer course admissions and education / university admission paperwork, along with printing and designing."],
   ["What should I bring when I visit?", "Requirements differ by service. Message us on WhatsApp with the service you need and we'll share a document checklist before you visit."],
 ];
 const MORE_FAQS = [
@@ -328,11 +480,12 @@ const localBusinessLd = {
   "@id": `${SITE_URL}/#business`,
   name: "DigiKart Solutions",
   slogan: "Digital Services Made Simple.",
-  description: "Digital & Online Service Provider in Greater Noida West offering documentation and online application assistance.",
+  description: "Digital services, education admissions, computer training and printing centre in Greater Noida West.",
   url: `${SITE_URL}/`,
   image: `${SITE_URL}/assets/og-logo.jpg`,
   logo: `${SITE_URL}/assets/logo.png`,
   telephone: `+91${PHONE}`,
+  email: EMAIL,
   address: {
     "@type": "PostalAddress",
     streetAddress: "Shop No. 01, Street No. 05, Near Aashiyana Apartment, Saraswati Kunj, Hanuman Mandir Road",
@@ -350,7 +503,7 @@ const localBusinessLd = {
     closes: "22:00",
   }],
   sameAs: [SOCIAL.instagram, SOCIAL.facebook, MAPS_LINK],
-  areaServed: ["Greater Noida West", "Greater Noida", "Noida"],
+  areaServed: ["Greater Noida West", "Gaur City", "Greater Noida", "Noida", "Ghaziabad"],
   hasOfferCatalog: {
     "@type": "OfferCatalog",
     name: "Digital & Online Services",
@@ -366,17 +519,25 @@ const faqLd = (list) => ({
 /* =========================================================
    HOME
    ========================================================= */
-const finderLinks = SERVICES.map((s) => {
-  const kw = [s.name, s.slug, ...s.options, s.short].join(" ").toLowerCase().replace(/"/g, "");
-  return `<a href="services/${s.slug}.html" data-keywords="${kw}"><span class="mega-icon">${svcIcon(s)}</span>${s.name}<small>${GROUPS[s.group]}</small></a>`;
-}).join("");
+const extraFinder = [
+  ...COURSES.map((c) => ({ href: "computer-classes.html", name: c.name, group: "Computer Classes", kw: `${c.name} computer course ${c.short}` })),
+  ...EDUCATION.map((e) => ({ href: "education.html", name: e.name, group: "Education", kw: `${e.name} admission ${e.short}` })),
+  ...PRINTING.map((p) => ({ href: "printing.html", name: p.name, group: "Printing", kw: `${p.name} ${p.short}` })),
+];
+const finderLinks = [
+  ...SERVICES.map((s) => {
+    const kw = [s.name, s.slug, ...s.options, s.short].join(" ").toLowerCase().replace(/"/g, "");
+    return `<a href="services/${s.slug}.html" data-keywords="${kw}"><span class="mega-icon">${svcIcon(s)}</span>${s.name}<small>${GROUPS[s.group]}</small></a>`;
+  }),
+  ...extraFinder.map((x) => `<a href="${x.href}" data-keywords="${x.kw.toLowerCase().replace(/"/g, "")}"><span class="mega-icon">${I.file}</span>${x.name}<small>${x.group}</small></a>`),
+].join("");
 const groupCount = (g) => SERVICES.filter((s) => s.group === g).length;
 
 write(
   "index.html",
   layout({
-    title: "DigiKart Solutions | Digital Services Made Simple — Greater Noida West",
-    description: "DigiKart Solutions is a Digital & Online Service Provider in Greater Noida West. Get assistance with Aadhaar, PAN, Passport, Driving Licence, RTO, GST, FSSAI and more. Call or WhatsApp 7528813511.",
+    title: "DigiKart Solutions | Digital, Education, Computer & Printing — Greater Noida West",
+    description: "DigiKart Solutions in Greater Noida West: 300+ digital services, university admissions, computer classes and printing. Call or WhatsApp 7528813511. Email support@digikartsolutions.online.",
     file: "",
     active: "home",
     jsonLd: [localBusinessLd, faqLd(GENERAL_FAQS)],
@@ -386,11 +547,11 @@ write(
       <div class="container">
         <div class="hero-grid">
           <div class="hero-copy">
-            <span class="pill"><span class="pill-badge">Local</span>Digital &amp; Online Service Provider · Greater Noida West</span>
+            <span class="pill"><span class="pill-badge">Local</span>Greater Noida West · Gaur City · Noida · Ghaziabad</span>
             <h1>Digital Services <span class="hl">Made Simple.<svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M4 15C70 6 180 2 296 9" stroke="currentColor" stroke-width="6" fill="none" stroke-linecap="round"/></svg></span></h1>
-            <p class="lead">From Aadhaar and PAN to passports, RTO work, GST and business registrations — we guide you through every step with clear checklists and honest advice.</p>
+            <p class="lead">One convenient destination for digital &amp; government services, education admissions, computer training and printing &amp; designing.</p>
             <div class="btn-group">
-              <a class="btn btn-primary btn-lg" href="services.html">Explore Our Services ${I.arrow}</a>
+              <a class="btn btn-primary btn-lg" href="digital-services.html">Explore Services ${I.arrow}</a>
               <a class="btn btn-wa btn-lg" href="${wa()}" target="_blank" rel="noopener">${I.waFill}WhatsApp Enquiry</a>
             </div>
             <ul class="trust-list">
@@ -407,7 +568,7 @@ write(
             </div>
             <div class="float-card fc-1">
               <span class="fc-icon">${I.layers}</span>
-              <div><strong>${SERVICES.length} service categories</strong><span>Identity · Travel · Business</span></div>
+              <div><strong>300+ services available</strong><span>Serving since 2019</span></div>
             </div>
             <div class="float-card fc-2">
               <span class="fc-icon">${I.waFill}</span>
@@ -442,27 +603,58 @@ write(
       </div>
     </section>
 
+    ${trustBand()}
+
     <section class="section">
       <div class="container">
-        <div class="section-head-row">
-          <div class="section-head reveal">
-            <span class="eyebrow">Popular Services</span>
-            <h2 class="h2">The services our customers <em>ask for most</em></h2>
-          </div>
-          <a class="btn btn-outline reveal" href="services.html">View all services ${I.arrow}</a>
+        <div class="section-head center reveal">
+          <span class="eyebrow">Four Centres Under One Roof</span>
+          <h2 class="h2">Multiple services. <em>One convenient destination.</em></h2>
+          <p class="lead">Choose the section you need — every enquiry reaches us on WhatsApp at ${PHONE_DISPLAY}.</p>
         </div>
-        <div class="grid-4">
-          ${["aadhaar", "pan-card", "passport", "rto"].map((slug, i) => svcCard(0, SERVICES.find((s) => s.slug === slug), { featured: true, index: i })).join("\n        ")}
+        ${pillarCards(0)}
+        <div class="promo-stack">
+          ${promoBanner({
+            kicker: "Now open for admissions",
+            title: "Computer Course Admission",
+            text: "Enquire about course details, duration, fees and student registration. Batches are confirmed when you message us.",
+            href: "computer-classes.html",
+            waMsg: "Hello DigiKart Solutions, I want to take admission in a Computer Course. Please share course details, duration and fees.",
+            tone: "blue",
+          })}
+          ${promoBanner({
+            kicker: "University &amp; college help",
+            title: "Education / University Admission",
+            text: "B.A., B.Sc., B.Com., exam forms, registration and graduation paperwork — we help you apply through official university processes.",
+            href: "education.html",
+            waMsg: "Hello DigiKart Solutions, I need help with Education / University Admission. Please share the requirements.",
+            tone: "red",
+          })}
         </div>
       </div>
     </section>
 
     <section class="section section-alt">
       <div class="container">
+        <div class="section-head-row">
+          <div class="section-head reveal">
+            <span class="eyebrow">Popular Digital Services</span>
+            <h2 class="h2">The services our customers <em>ask for most</em></h2>
+          </div>
+          <a class="btn btn-outline reveal" href="digital-services.html">View all digital services ${I.arrow}</a>
+        </div>
+        <div class="grid-4">
+          ${["aadhaar", "pan-card", "epfo-pf", "loan-services"].map((slug, i) => svcCard(0, SERVICES.find((s) => s.slug === slug), { featured: true, index: i })).join("\n        ")}
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
         <div class="section-head center reveal">
-          <span class="eyebrow">All Services</span>
-          <h2 class="h2">Everything you need, <em>under one roof</em></h2>
-          <p class="lead">Browse by category to find the assistance you need — from identity documents to business compliance.</p>
+          <span class="eyebrow">Digital Catalogue</span>
+          <h2 class="h2">300+ digital &amp; government <em>services</em></h2>
+          <p class="lead">Browse by category — identity, vehicle, banking, tax, business and online forms.</p>
         </div>
         <div style="text-align:center;margin-bottom:2.25rem" class="reveal">
           <div class="tabs" data-tabs="#svc-grid" role="tablist">
@@ -487,12 +679,12 @@ write(
       <div class="container about-grid">
         <div class="about-media reveal">
           <img src="assets/about-docs.jpg" alt="Customer filling in an application form with a laptop and phone on the desk" width="1024" height="768" loading="lazy" />
-          <div class="about-badge"><strong>${SERVICES.length}+</strong><span>service categories handled from one local desk</span></div>
+          <div class="about-badge"><strong>500+</strong><span>happy clients served since 2019</span></div>
         </div>
         <div class="about-copy reveal">
           <span class="eyebrow">About DigiKart</span>
           <h2 class="h2" style="margin-bottom:1rem">Your neighbourhood partner for <em>digital paperwork</em></h2>
-          <p class="lead">DigiKart Solutions helps individuals, families and small businesses in Greater Noida West complete essential online services — without the confusion.</p>
+          <p class="lead">Serving since 2019, DigiKart Solutions is a digital services, education, computer training and printing centre for Greater Noida West, Gaur City, Noida and Ghaziabad.</p>
           <ul class="checklist">
             <li><span class="check">${I.check}</span><div><strong>Step-by-step guidance</strong><span>We explain exactly what's needed before you begin.</span></div></li>
             <li><span class="check">${I.check}</span><div><strong>Careful document preparation</strong><span>Forms and papers checked so your application is complete.</span></div></li>
@@ -540,22 +732,13 @@ write(
           <div class="bento-card reveal" style="--d:.06s"><span class="svc-icon">${I.chat}</span><h3>Quick WhatsApp help</h3><p>Ask questions and share details from your phone.</p></div>
           <div class="bento-card reveal"><span class="svc-icon">${I.store}</span><h3>Local &amp; accessible</h3><p>Visit our Saraswati Kunj shop in Greater Noida West.</p></div>
           <div class="bento-card bento-red reveal" style="--d:.06s"><span class="svc-icon">${I.lock}</span><h3>Respect for your data</h3><p>Your information is used only for your request.</p></div>
-          <div class="bento-card bento-wide reveal"><span class="bento-stat">${SERVICES.length}+</span><div><h3>Service categories in one place</h3><p>Identity documents, travel, vehicle, tax and business services — no running between offices.</p></div></div>
+          <div class="bento-card bento-wide reveal"><span class="bento-stat">300+</span><div><h3>Services under one roof</h3><p>Identity documents, PF, loans, vehicle, tax and business services — no running between offices.</p></div></div>
           <div class="bento-card bento-wide reveal" style="--d:.06s"><span class="svc-icon">${I.user}</span><div><h3>Personal, patient guidance</h3><p>Whether it's your first application or a correction, we take time to explain each step.</p></div></div>
         </div>
       </div>
     </section>
 
-    <section class="section-sm">
-      <div class="container">
-        <div class="stats-band reveal">
-          <div class="stat"><strong>${SERVICES.length}<sup>+</sup></strong><span>Service categories</span></div>
-          <div class="stat"><strong>GN West</strong><span>Saraswati Kunj, Hanuman Mandir Road</span></div>
-          <div class="stat"><strong>75288 13511</strong><span>Phone &amp; WhatsApp enquiries</span></div>
-          <div class="stat"><strong>3</strong><span>Ways to enquire — call, WhatsApp or visit</span></div>
-        </div>
-      </div>
-    </section>
+    ${reviewsSection(true)}
 
     <section class="section">
       <div class="container faq-layout">
@@ -597,7 +780,7 @@ write(
       <div class="container about-grid">
         <div class="about-media reveal">
           <img src="assets/hero-assist.jpg" alt="DigiKart team member assisting a customer at the service desk" width="1024" height="768" loading="lazy" />
-          <div class="about-badge"><strong>GN West</strong><span>Serving Greater Noida West and nearby areas</span></div>
+          <div class="about-badge"><strong>Since 2019</strong><span>Serving Greater Noida West, Noida and Ghaziabad</span></div>
         </div>
         <div class="reveal">
           <span class="eyebrow">Who we are</span>
@@ -608,6 +791,7 @@ write(
         </div>
       </div>
     </section>
+    ${trustBand()}
     <section class="section section-alt">
       <div class="container">
         <div class="section-head center reveal">
@@ -632,9 +816,12 @@ write(
           <div class="info-row"><span class="svc-icon">${I.store}</span><div><small>Business</small><strong>DigiKart Solutions — Digital &amp; Online Service Provider</strong></div></div>
           <div class="info-row"><span class="svc-icon">${I.pin}</span><div><small>Address</small><strong>${ADDRESS_ONE}</strong></div></div>
           <div class="info-row"><span class="svc-icon">${I.phone}</span><div><small>Phone / WhatsApp</small><strong><a href="tel:${PHONE}">${PHONE_DISPLAY}</a></strong></div></div>
+          <div class="info-row"><span class="svc-icon">${I.mail}</span><div><small>Email</small><strong><a href="mailto:${EMAIL}">${EMAIL}</a></strong></div></div>
+          <div class="info-row"><span class="svc-icon">${I.clock}</span><div><small>Hours</small><strong>${HOURS}</strong></div></div>
         </div>
       </div>
     </section>
+    ${reviewsSection(true)}
     ${ctaBlock(0)}
     <div style="height:3rem"></div>
 `,
@@ -648,7 +835,7 @@ write(
   "services.html",
   layout({
     title: "Our Services | Aadhaar, PAN, Passport, RTO, GST & More — DigiKart Solutions",
-    description: "Explore all DigiKart Solutions services in Greater Noida West — Aadhaar, PAN, Voter ID, Driving Licence, Passport, RTO, documents, printing, tickets, insurance, GST, business, DSC, trademark and FSSAI.",
+    description: "Explore all DigiKart Solutions services in Greater Noida West — Aadhaar, PAN, EPFO / PF, loans, Voter ID, Driving Licence, Passport, RTO, documents, printing, tickets, insurance, GST, business, DSC, trademark and FSSAI.",
     file: "services.html",
     active: "services",
     body: `
@@ -666,6 +853,142 @@ write(
       </div>
     </section>`).join("")}
     ${ctaBlock(0, "Can't find what you're looking for?", "Tell us what you need on WhatsApp — we'll let you know if and how we can help.")}
+    <div style="height:3rem"></div>
+`,
+  })
+);
+
+write(
+  "digital-services.html",
+  layout({
+    title: "Digital & Government Services | DigiKart Solutions",
+    description: "300+ digital and government services in Greater Noida West — PAN, Aadhaar, Passport, GST, MSME, FSSAI, ITR, EPFO, insurance, loans, vehicle and online forms. WhatsApp 7528813511.",
+    file: "digital-services.html",
+    active: "services",
+    body: `
+    ${pageHero(0, "Digital &amp; government services", "PAN, Aadhaar, Passport, Voter ID, GST, MSME, FSSAI, ITR, insurance, vehicle services, EPFO and 300+ online applications — assistance from one local desk.", [["Digital Services"]])}
+    <section class="section" style="padding-top:0">
+      <div class="container" style="display:flex;justify-content:center;margin-bottom:1rem">
+        <a class="btn btn-wa" href="${wa("Hello DigiKart Solutions, I want to enquire about Digital Services.")}" target="_blank" rel="noopener">${I.waFill}WhatsApp Enquiry</a>
+      </div>
+    </section>
+    ${Object.entries(GROUPS).map(([k, v], gi) => `
+    <section class="section${gi % 2 ? " section-alt" : ""}">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">${String(gi + 1).padStart(2, "0")} · Category</span>
+          <h2 class="h2">${v}</h2>
+        </div>
+        <div class="grid-3">
+          ${SERVICES.filter((s) => s.group === k).map((s, i) => svcCard(0, s, { index: i })).join("\n          ")}
+        </div>
+      </div>
+    </section>`).join("")}
+    ${ctaBlock(0, "Need help with a digital service?", "Message us on WhatsApp with the service name — we'll share documents and next steps.")}
+    <div style="height:3rem"></div>
+`,
+  })
+);
+
+write(
+  "education.html",
+  layout({
+    title: "Education & Admissions | DigiKart Solutions, Greater Noida West",
+    description: "University and college admission assistance — B.A., B.Sc., B.Com., exam forms, registration and graduation paperwork. WhatsApp 7528813511.",
+    file: "education.html",
+    active: "education",
+    body: `
+    ${pageHero(0, "Education &amp; admissions", "Assistance with university and college admission forms, exam applications, registration and graduation paperwork. Admissions are processed only by the university or college.", [["Education"]])}
+    <section class="section">
+      <div class="container">
+        ${promoBanner({
+          kicker: "Admission support",
+          title: "Education / University Admission",
+          text: "Share the course (B.A. / B.Sc. / B.Com. or other) and we will help with forms, documents and the official portal steps.",
+          href: "education.html",
+          waMsg: "Hello DigiKart Solutions, I need help with Education / University Admission.",
+          tone: "red",
+        })}
+        <div class="grid-3" style="margin-top:2.5rem">
+          ${EDUCATION.map((e, i) => `<article class="course-card reveal" style="--d:${i * 0.05}s">
+            <span class="svc-icon">${I.book}</span>
+            <h3>${e.name}</h3>
+            <p>${e.short}</p>
+            <ul class="svc-tags">${e.options.map((o) => `<li>${o}</li>`).join("")}</ul>
+            <a class="btn btn-wa btn-sm" href="${wa(`Hello DigiKart Solutions, I need help with ${e.name}.`)}" target="_blank" rel="noopener">${I.waFill}WhatsApp Enquiry</a>
+          </article>`).join("\n          ")}
+        </div>
+        <div class="notice" style="margin-top:2rem">${I.info}<span>DigiKart assists with applications. Seat allotment, eligibility and admission decisions remain with the university or college. We do not guarantee admission.</span></div>
+      </div>
+    </section>
+    ${ctaBlock(0, "Start your admission enquiry", "WhatsApp the course name and your last qualification — we'll tell you what documents to bring.")}
+    <div style="height:3rem"></div>
+`,
+  })
+);
+
+write(
+  "computer-classes.html",
+  layout({
+    title: "Computer Classes & Training | DigiKart Solutions",
+    description: "Computer courses in Greater Noida West — course details, duration, fees on enquiry, and student registration via WhatsApp 7528813511.",
+    file: "computer-classes.html",
+    active: "computer",
+    body: `
+    ${pageHero(0, "Computer classes &amp; training", "Practical computer courses for students and working people. Duration and fees are confirmed when you enquire — we do not publish unverified prices.", [["Computer Classes"]])}
+    <section class="section">
+      <div class="container">
+        ${promoBanner({
+          kicker: "Admissions open",
+          title: "Computer Course Admission",
+          text: "Message us for batch timing, duration, fees and student registration. Bring a valid ID when you visit the centre.",
+          href: "computer-classes.html",
+          waMsg: "Hello DigiKart Solutions, I want Computer Course Admission. Please share course list, duration, fees and batch timing.",
+          tone: "blue",
+        })}
+        <div class="grid-3" style="margin-top:2.5rem">
+          ${COURSES.map((c, i) => `<article class="course-card reveal" style="--d:${i * 0.05}s">
+            <span class="svc-icon">${I.monitor}</span>
+            <h3>${c.name}</h3>
+            <p>${c.short}</p>
+            <p class="course-meta"><span>Duration: ${c.duration}</span><span>Fees: ${c.fees}</span></p>
+            <ul class="svc-tags">${c.highlights.map((h) => `<li>${h}</li>`).join("")}</ul>
+            <div class="btn-group">
+              <a class="btn btn-wa btn-sm" href="${wa(`Hello DigiKart Solutions, I want to take admission in ${c.name}. Please share duration, fees and batch details.`)}" target="_blank" rel="noopener">${I.waFill}Admission enquiry</a>
+            </div>
+          </article>`).join("\n          ")}
+        </div>
+      </div>
+    </section>
+    ${ctaBlock(0, "Register your interest", "WhatsApp your name, mobile number and the course you want. We will confirm fees, duration and the next batch.")}
+    <div style="height:3rem"></div>
+`,
+  })
+);
+
+write(
+  "printing.html",
+  layout({
+    title: "Printing & Designing | DigiKart Solutions, Greater Noida West",
+    description: "Photocopy, printouts, lamination, photo printing, mug and t-shirt printing, customised gifts and graphic design in Greater Noida West. WhatsApp 7528813511.",
+    file: "printing.html",
+    active: "printing",
+    body: `
+    ${pageHero(0, "Printing &amp; designing", "Everyday print work and personalised products. Order on WhatsApp — there is no online cart or checkout.", [["Printing"]])}
+    <section class="section">
+      <div class="container">
+        <div class="grid-3">
+          ${PRINTING.map((p, i) => `<article class="course-card reveal" style="--d:${i * 0.04}s">
+            <span class="svc-icon">${I.printer}</span>
+            <h3>${p.name}</h3>
+            <p>${p.short}</p>
+            <p class="course-meta"><span>${p.custom}</span><span>${p.price}</span></p>
+            <a class="btn btn-wa btn-sm" href="${wa(`Hello DigiKart Solutions, I want to order ${p.name}. Please share price and options.`)}" target="_blank" rel="noopener">${I.waFill}Order on WhatsApp</a>
+          </article>`).join("\n          ")}
+        </div>
+      </div>
+    </section>
+    ${ctaBlock(0, "Need a print or custom gift?", "Send the file or photo on WhatsApp and tell us the product — we'll confirm price and timing.")}
     <div style="height:3rem"></div>
 `,
   })
@@ -770,8 +1093,8 @@ write(
         <div class="contact-cards">
           <a class="contact-card reveal" href="tel:${PHONE}"><span class="svc-icon">${I.phone}</span><h3>Call us</h3><p>${PHONE_DISPLAY}</p></a>
           <a class="contact-card wa reveal" style="--d:.06s" href="${wa()}" target="_blank" rel="noopener"><span class="svc-icon">${I.waFill}</span><h3>WhatsApp</h3><p>Click to chat</p></a>
-          <a class="contact-card red reveal" style="--d:.12s" href="${MAPS_LINK}" target="_blank" rel="noopener"><span class="svc-icon">${I.pin}</span><h3>Visit</h3><p>Saraswati Kunj, Greater Noida West</p></a>
-          <div class="contact-card reveal" style="--d:.18s"><span class="svc-icon">${I.clock}</span><h3>Working hours</h3><p>To be confirmed</p></div>
+          <a class="contact-card red reveal" style="--d:.12s" href="${MAPS_LINK}" target="_blank" rel="noopener"><span class="svc-icon">${I.pin}</span><h3>Visit</h3><p>Greater Noida West</p></a>
+          <a class="contact-card reveal" style="--d:.18s" href="mailto:${EMAIL}"><span class="svc-icon">${I.mail}</span><h3>Email</h3><p>${EMAIL}</p></a>
         </div>
       </div>
     </section>
@@ -806,7 +1129,14 @@ write(
                   <label for="service">Interested service <span class="req">*</span></label>
                   <select id="service" name="service" required>
                     <option value="">Select a service</option>
+                    <optgroup label="Main sections">
+                      <option value="Digital Services">Digital Services</option>
+                      <option value="Education / University Admission">Education / University Admission</option>
+                      <option value="Computer Course Admission">Computer Course Admission</option>
+                      <option value="Printing &amp; Designing">Printing &amp; Designing</option>
+                    </optgroup>
                     ${SERVICES.map((s) => `<option value="${s.name}">${s.name}</option>`).join("")}
+                    ${COURSES.map((c) => `<option value="${c.name}">${c.name}</option>`).join("")}
                     <option value="Other">Other / Not sure</option>
                   </select>
                   <span class="error">Please select a service.</span>
@@ -885,7 +1215,7 @@ legalPage("privacy-policy.html", "Privacy Policy", "Privacy Policy for the DigiK
           <h2>Data retention &amp; security</h2>
           <p>We keep information only as long as needed to assist you and take reasonable care to protect documents and details you share with us.</p>
           <h2>Contact</h2>
-          <p>For privacy questions, contact us at <a href="tel:${PHONE}">${PHONE_DISPLAY}</a> or visit ${ADDRESS_ONE}.</p>`);
+          <p>For privacy questions, contact us at <a href="tel:${PHONE}">${PHONE_DISPLAY}</a>, <a href="mailto:${EMAIL}">${EMAIL}</a> or visit ${ADDRESS_ONE}.</p>`);
 
 legalPage("terms.html", "Terms &amp; Conditions", "Terms and conditions for using the DigiKart Solutions website and assistance services.", "Please read these terms before using our website or requesting assistance.", `
           <h2>Nature of services</h2>
@@ -899,7 +1229,7 @@ legalPage("terms.html", "Terms &amp; Conditions", "Terms and conditions for usin
           <h2>No online payments</h2>
           <p>This website does not process payments. Any charges are discussed and settled directly with DigiKart Solutions.</p>
           <h2>Contact</h2>
-          <p><a href="tel:${PHONE}">${PHONE_DISPLAY}</a> · ${ADDRESS_ONE}</p>`);
+          <p><a href="tel:${PHONE}">${PHONE_DISPLAY}</a> · <a href="mailto:${EMAIL}">${EMAIL}</a> · ${ADDRESS_ONE}</p>`);
 
 legalPage("disclaimer.html", "Disclaimer", "Important disclaimer about DigiKart Solutions assistance services and government-related applications.", "Important information about our role as an independent assistance provider.", `
           <p>DigiKart Solutions is a private Digital &amp; Online Service Provider. We assist customers with documentation and applications related to services such as Aadhaar, PAN, Voter ID, Driving Licence, Passport, RTO matters, GST and the other categories listed on this website.</p>
@@ -991,7 +1321,7 @@ SERVICES.forEach((s, idx) => {
             <div class="panel-head"><span class="num">01</span><h2>Overview</h2></div>
             <p>${s.intro}</p>
             <p style="margin-top:1rem">Visit our Greater Noida West desk or message us on WhatsApp — our team explains what's required in simple terms, helps you organise the right documents, and supports you through each step.</p>
-            <div class="notice">${I.info}<span>DigiKart Solutions provides assistance and process guidance only. Official processing and approvals remain with the respective authorities. We do not claim government affiliation or guaranteed outcomes.</span></div>
+            <div class="notice">${I.info}<span>${s.notice || "DigiKart Solutions provides assistance and process guidance only. Official processing and approvals remain with the respective authorities. We do not claim government affiliation or guaranteed outcomes."}</span></div>
           </div>
           <div class="panel reveal">
             <div class="panel-head"><span class="num">02</span><h2>Service options</h2></div>
@@ -1055,7 +1385,7 @@ SERVICES.forEach((s, idx) => {
    ========================================================= */
 write("robots.txt", `User-agent: *\nAllow: /\nDisallow: /404.html\n\nSitemap: ${SITE_URL}/sitemap.xml\n`);
 
-const urls = ["", "about.html", "services.html", "how-it-works.html", "faqs.html", "contact.html", ...SERVICES.map((s) => `services/${s.slug}.html`), "privacy-policy.html", "terms.html", "disclaimer.html"];
+const urls = ["", "about.html", "services.html", "digital-services.html", "education.html", "computer-classes.html", "printing.html", "how-it-works.html", "faqs.html", "contact.html", ...SERVICES.map((s) => `services/${s.slug}.html`), "privacy-policy.html", "terms.html", "disclaimer.html"];
 write(
   "sitemap.xml",
   `<?xml version="1.0" encoding="UTF-8"?>

@@ -241,6 +241,48 @@
     });
   }
 
+  /* Reviews carousel */
+  $$("[data-carousel]").forEach((root) => {
+    const track = $(".reviews-track", root);
+    const dotsWrap = $(".reviews-dots", root);
+    const cards = $$(".review-card", track);
+    if (!track || !cards.length) return;
+    const perView = () => Math.max(1, Math.round(track.clientWidth / cards[0].offsetWidth));
+    const pages = () => Math.max(1, cards.length - perView() + 1);
+    let index = 0;
+    const renderDots = () => {
+      dotsWrap.innerHTML = Array.from({ length: pages() }, (_, i) => `<span class="${i === index ? "active" : ""}"></span>`).join("");
+    };
+    const go = (i) => {
+      index = (i + pages()) % pages();
+      track.scrollTo({ left: cards[index].offsetLeft - 4 });
+      renderDots();
+    };
+    $$(".reviews-btn", root).forEach((b) => b.addEventListener("click", () => { go(index + Number(b.dataset.dir)); restart(); }));
+    let scrollTimer;
+    track.addEventListener("scroll", () => {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        const left = track.scrollLeft;
+        index = cards.reduce((best, c, i) => Math.abs(c.offsetLeft - left) < Math.abs(cards[best].offsetLeft - left) ? i : best, 0);
+        index = Math.min(index, pages() - 1);
+        renderDots();
+      }, 120);
+    }, { passive: true });
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let timer;
+    const restart = () => {
+      clearInterval(timer);
+      if (!reduce) timer = setInterval(() => go(index + 1), 5000);
+    };
+    root.addEventListener("mouseenter", () => clearInterval(timer));
+    root.addEventListener("mouseleave", restart);
+    track.addEventListener("touchstart", () => clearInterval(timer), { passive: true });
+    window.addEventListener("resize", renderDots);
+    renderDots();
+    restart();
+  });
+
   /* Year */
   $$("[data-year]").forEach((el) => (el.textContent = String(new Date().getFullYear())));
 })();

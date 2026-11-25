@@ -14,8 +14,11 @@ Then open http://localhost:3000.
 
 | What | Where |
 | --- | --- |
-| Service descriptions, options, documents, process, FAQs | `content/services.js` |
-| Phone, address, working hours, domain | top of `build-site.js` |
+| Digital service pages | `content/services.js` |
+| Computer courses (duration, fees, highlights) | `content/courses.js` |
+| Education / admission programmes | `content/education.js` |
+| Printing products & prices | `content/printing.js` |
+| Phone, email, address, hours, domain | top of `build-site.js` |
 | Page layouts and copy | `build-site.js` |
 | Styles / colours | `css/styles.css` (tokens in `:root`) |
 | Interactions (menu, search, tabs, FAQ, form) | `js/main.js` |

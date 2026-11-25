@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /404.html
 
-Sitemap: https://digikartsolutions.in/sitemap.xml
+Sitemap: https://digikartsolutions.online/sitemap.xml
